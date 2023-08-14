@@ -1,0 +1,63 @@
+{
+  "name": "run-automations-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node-dev src/index.ts",
+    "test": "jest --watchAll --no-cache --detectOpenHandles"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "verbose": true,
+    "testTimeout": 1000000,
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./src/test/setup.ts"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tibz-Dankan/run-automations-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tibz-Dankan/run-automations-backend/issues"
+  },
+  "homepage": "https://github.com/Tibz-Dankan/run-automations-backend#readme",
+  "dependencies": {
+    "@prisma/client": "^5.1.1",
+    "@sendgrid/mail": "^7.7.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/mongoose": "^5.11.97",
+    "@types/multer": "^1.4.7",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "firebase": "^9.17.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.0.1",
+    "mongoose": "^6.9.1",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.1.1",
+    "socket.io": "^4.6.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.13.0",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.4.1",
+    "mongodb-memory-server": "^8.11.4",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5"
+  }
+}

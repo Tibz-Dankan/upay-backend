@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Role {
+  SELLER
+  BUYER
+  DRIVER
+}
+
+model User {
+  userIndex            Int       @unique @default(autoincrement())
+  userId               String    @id @default(uuid())
+  firstname            String    @db.Text
+  lastname             String    @db.Text
+  email                String    @unique
+  role                 Role
+  password             String    @db.Text
+  imageUrl             String?   @db.Text
+  imagePath            String?   @db.Text
+  createdAt            DateTime  @default(now())
+  updateAt             DateTime? @updatedAt
+  passwordResetToken   String?   @db.Text
+  passwordResetExpires DateTime?
+}
+
+
+// model Student {
+//   studentIndex Int          @unique @default(autoincrement())
+//   studentId    String       @id @default(uuid())
+//   addedBy      User         @relation(fields: [addedById], references: [userId])
+//   addedById    String       @db.VarChar(255)
+//   firstName    String       @db.VarChar(255)
+//   lastName     String       @db.VarChar(255)
+//   gender       String       @db.VarChar(255)
+//   age          Int
+//   district     String       @db.VarChar(255)
+//   region       String       @db.VarChar(255)
+//   prediction   Prediction[]
+//   createdAt    DateTime     @default(now())
+//   updateAt     DateTime?    @updatedAt
+
+//   @@index([addedById])
+// }
+
+// model Subject {
+//   subjectIndex Int          @unique @default(autoincrement())
+//   subjectId    String       @id @default(uuid())
+//   subjectName  String       @db.VarChar(255)
+//   prediction   Prediction[]
+//   createdAt    DateTime     @default(now())
+//   updateAt     DateTime?    @updatedAt
+// }
+
+// model Prediction {
+//   predictionIndex  Int       @unique @default(autoincrement())
+//   predictionId     String    @id @default(uuid())
+//   predictedBy      User      @relation(fields: [predictedById], references: [userId])
+//   predictedById    String    @db.VarChar(255)
+//   student          Student   @relation(fields: [studentId], references: [studentId])
+//   studentId        String    @db.VarChar(255)
+//   subject          Subject   @relation(fields: [subjectId], references: [subjectId])
+//   subjectId        String    @db.VarChar(255)
+//   previousExamMark Int?
+//   predictedMark    Int
+//   attendance       Int
+//   remark           String?    @db.VarChar(1500)
+//   createdAt        DateTime  @default(now())
+//   updateAt         DateTime? @updatedAt
+
+//   @@index([predictedById])
+//   @@index([studentId])
+//   @@index([subjectId])
+// }
