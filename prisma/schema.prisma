@@ -4,14 +4,13 @@ generator client {
 
 datasource db {
   provider     = "postgresql"
-  url          = env("DATABASE_URL")
+  url          = env("DATABASE_URL_UPAY")
   relationMode = "prisma"
 }
 
 enum Role {
-  SELLER
-  BUYER
-  DRIVER
+  customer
+  admin
 }
 
 model User {
@@ -20,6 +19,7 @@ model User {
   firstname            String    @db.Text
   lastname             String    @db.Text
   email                String    @unique
+  phone                String    @db.Text
   role                 Role
   password             String    @db.Text
   imageUrl             String?   @db.Text
@@ -29,7 +29,6 @@ model User {
   passwordResetToken   String?   @db.Text
   passwordResetExpires DateTime?
 }
-
 
 // model Student {
 //   studentIndex Int          @unique @default(autoincrement())
@@ -78,3 +77,20 @@ model User {
 //   @@index([studentId])
 //   @@index([subjectId])
 // }
+
+// IMPORTANT COMMNANDS 
+
+// INITIALIZE PRISMA
+// npx prisma init --datasource-provider postgresql
+// npx prisma init --datasource-provider mysql
+
+// APPLY CHANGES TO ACTUAL DATABASE 
+// npx prisma migrate dev --name test1
+
+// GENERATE THE CLIENT TO INTERACT WITH THE DATABASE
+// npx prisma generate
+
+// TO EXPLORE AND MANUPLATE DATA USE PRISMA STUDIO
+// npx prisma studio
+
+// OWSP : to check it out

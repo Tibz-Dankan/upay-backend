@@ -1,20 +1,34 @@
-import { server } from "./app";
+import { app } from "./app";
 import { AppError } from "./utils/error";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
+import { PrismaClient } from "@prisma/client";
+
+new PrismaClient();
 
 dotenv.config();
+
 const startApp = async () => {
-  const port = process.env.PORT || 5000;
-  const DATABASE_URL = process.env.DATABASE_URL;
+  const DATABASE_URL_UPAY = process.env.DATABASE_URL_UPAY;
+  const PORT = 5000 || process.env.PORT;
 
-  if (!DATABASE_URL) return new AppError("MONGO URL not defined", 400);
+  if (!DATABASE_URL_UPAY) {
+    console.log("No postgres url");
+    throw new Error("No postgres url");
+  }
 
-  // database connection on start
+  try {
+    const sequelize = new Sequelize(DATABASE_URL_UPAY);
 
-  server.listen(port, () =>
-    console.log(`server started and running on port ${port}...`)
-  );
+    await sequelize.authenticate();
+    console.log("Database connection has been established successfully!");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+
+  app.listen(PORT, () => {
+    console.log("Server started and running on port: " + PORT + " 🚀");
+  });
 };
 
 startApp();

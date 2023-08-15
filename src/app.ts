@@ -15,29 +15,17 @@ if (process.env.NODE_ENV === "production") {
   url = "http://localhost:3000";
 }
 
-import http from "http";
-const server = http.createServer(app);
-import { Server } from "socket.io";
-const io = new Server(server, {
-  cors: {
-    origin: url,
-    methods: ["GET", "POST"],
-  },
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Routes here
-app.use(userRoutes);
+app.use("/v1/api/users", userRoutes);
 app.use(errorHandler);
 
 app.use("*", (req: Request, res: Response) => {
   res.status(404).json({
     status: "fail",
-    // message: req.originalUrl,
-    message: "error end point not found!",
+    message: `error end-point ${req.originalUrl} not found!`,
   });
 });
 
-export { server };
+export { app };
