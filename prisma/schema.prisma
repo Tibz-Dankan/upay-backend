@@ -13,11 +13,11 @@ enum Role {
   admin
 }
 
-model User {
+model Users {
   userIndex            Int       @unique @default(autoincrement())
   userId               String    @id @default(uuid())
-  firstname            String    @db.Text
-  lastname             String    @db.Text
+  firstName            String    @db.Text
+  lastName             String    @db.Text
   email                String    @unique
   phone                String    @db.Text
   role                 Role
@@ -25,7 +25,7 @@ model User {
   imageUrl             String?   @db.Text
   imagePath            String?   @db.Text
   createdAt            DateTime  @default(now())
-  updateAt             DateTime? @updatedAt
+  updatedAt             DateTime? @updatedAt
   passwordResetToken   String?   @db.Text
   passwordResetExpires DateTime?
 }

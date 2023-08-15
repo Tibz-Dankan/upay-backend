@@ -1,6 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-// import { User } from "../models/user";
-// import model from "../models";
 import { models } from "../models";
 import { AppError } from "../utils/error";
 import { asyncHandler } from "../utils/asyncHandler";
@@ -8,8 +6,8 @@ import { AuthToken } from "../utils/token";
 import { Email } from "../utils/email";
 import { createHash } from "crypto";
 import { Op } from "sequelize";
+import jwt from "jsonwebtoken";
 
-// const User = models["User"];
 const User = models.User;
 
 export const signup = asyncHandler(
@@ -29,8 +27,6 @@ export const signup = asyncHandler(
     }
 
     const user = await User.findOne({ where: { email: email } });
-    console.log("Reached here");
-    console.log("Reached here");
     if (user) return next(new AppError("Email already registered", 400));
 
     const newUser = User.build(req.body);
@@ -49,7 +45,10 @@ export const signin = asyncHandler(
       return next(new AppError("Please fill out all fields", 400));
     }
     const user = await User.findOne({ where: { email: email } });
-    if (user) return next(new AppError("Email already registered", 400));
+    if (!user || !(await user.correctPassword(password))) {
+      return next(new AppError("Invalid email or password", 400));
+    }
+
     await new AuthToken(user, 200, res).send();
   }
 );
@@ -124,5 +123,35 @@ export const resetPassword = asyncHandler(
     } catch (error) {
       next(error); // Pass the error to the error handling middleware
     }
+  }
+);
+
+export const protect = asyncHandler(
+  async (req: Request | any, res: Response, next: NextFunction) => {
+    const authHeader = req.headers["authorization"];
+    let token;
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      token = authHeader.split(" ")[1];
+    }
+    if (!token) {
+      return next(
+        new AppError("You are not logged! Please to get access", 400)
+      );
+    }
+
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const userId = decoded.userId;
+
+    const user = await User.findOne({ where: { userId: userId } });
+    if (!user) {
+      return next(
+        new AppError("The user belonging to this token no exists!", 403)
+      );
+    }
+    // req.id = decoded.userId;
+    // next();
+    req["user"] = user;
+    res.locals.user = user;
+    next();
   }
 );

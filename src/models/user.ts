@@ -70,9 +70,10 @@ export default (sequelize: Sequelize, DataTypes: any) => {
   User.init(
     {
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUID,
+        // autoIncrement: true,
       },
       firstName: {
         type: DataTypes.STRING,
@@ -104,11 +105,11 @@ export default (sequelize: Sequelize, DataTypes: any) => {
       },
       imageUrl: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       imagePath: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       passwordResetToken: {
         type: DataTypes.STRING,

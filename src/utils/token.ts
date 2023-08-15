@@ -15,7 +15,8 @@ export class AuthToken {
   signToken(id: string) {
     const jwtSecret: Secret = process.env.JWT_SECRET!;
     return jwt.sign({ id }, jwtSecret, {
-      expiresIn: process.env.JWT_EXPIRES_IN_HOURS,
+      // expiresIn: process.env.JWT_EXPIRES_IN_HOURS,
+      expiresIn: "2h",
     });
   }
 
@@ -25,7 +26,7 @@ export class AuthToken {
     this.user = user;
     this.statusCode = statusCode;
     this.res = res;
-    this.token = this.signToken(user._id);
+    this.token = this.signToken(user.userId);
     this.expirationTime = new Date(
       Date.now() + JWT_EXPIRES_IN * 60 * 60 * 1000
     );
