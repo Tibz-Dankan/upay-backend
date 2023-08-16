@@ -30,23 +30,16 @@ model Users {
   passwordResetExpires DateTime?
 }
 
-// model Student {
-//   studentIndex Int          @unique @default(autoincrement())
-//   studentId    String       @id @default(uuid())
-//   addedBy      User         @relation(fields: [addedById], references: [userId])
-//   addedById    String       @db.VarChar(255)
-//   firstName    String       @db.VarChar(255)
-//   lastName     String       @db.VarChar(255)
-//   gender       String       @db.VarChar(255)
-//   age          Int
-//   district     String       @db.VarChar(255)
-//   region       String       @db.VarChar(255)
-//   prediction   Prediction[]
-//   createdAt    DateTime     @default(now())
-//   updateAt     DateTime?    @updatedAt
-
-//   @@index([addedById])
-// }
+model Products {
+  productIndex Int          @unique @default(autoincrement())
+  productId    String       @id @default(uuid())
+  productName   String       @db.Text
+  specification   String?       @db.Text
+  imageUrl             String?   @db.Text
+  imagePath            String?   @db.Text
+  createdAt    DateTime     @default(now())
+  updateAt     DateTime?    @updatedAt
+}
 
 // model Subject {
 //   subjectIndex Int          @unique @default(autoincrement())

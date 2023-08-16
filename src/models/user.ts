@@ -19,7 +19,6 @@ export interface UserAttributes {
 }
 
 class User extends Model<UserAttributes> implements UserAttributes {
-  // export class User extends Model<UserAttributes> implements UserAttributes {
   public userId!: number;
   public firstName!: string;
   public lastName!: string;

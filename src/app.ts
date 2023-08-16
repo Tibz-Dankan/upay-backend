@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { errorHandler } from "./controllers/errorController";
 import { userRoutes } from "./routes/userRoutes";
+import { productRoutes } from "./routes/productRoutes";
 
 const app = express();
 
@@ -12,13 +13,13 @@ if (process.env.NODE_ENV === "production") {
   url = process.env.PRODUCTION_URL;
 } else {
   app.use(cors());
-  url = "http://localhost:3000";
 }
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/v1/api/users", userRoutes);
+app.use("/v1/api/products", productRoutes);
 app.use(errorHandler);
 
 app.use("*", (req: Request, res: Response) => {
