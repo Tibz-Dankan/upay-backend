@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { Product } from "../models"; // Import your Product model
+import { Product } from "../models";
 import { AppError } from "../utils/error";
 import { asyncHandler } from "../utils/asyncHandler";
 
-const product = new Product(); // Create an instance of your Product model
+const product = new Product();
 
 export const addProduct = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
