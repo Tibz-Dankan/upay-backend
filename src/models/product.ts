@@ -1,79 +1,52 @@
-import { Model, DataTypes, Optional } from "sequelize";
-import { Sequelize } from "sequelize/types";
+import { PrismaClient } from "@prisma/client";
 
-interface ProductAttributes {
-  productIndex: number;
-  productId: string;
+export interface ProductAttributes {
+  productId?: string;
   productName: string;
   specification?: string | null;
   imageUrl?: string | null;
   imagePath?: string | null;
-  createdAt: Date;
-  updatedAt?: Date | null;
 }
 
-// Optional attributes for creating a new product
-// interface ProductCreationAttributes
-//   extends Optional<ProductAttributes, "productIndex" | "updatedAt"> {}
+export default class Product {
+  private prisma: PrismaClient;
 
-class Product extends Model<ProductAttributes> implements ProductAttributes {
-  public productIndex!: number;
-  public productId!: string;
-  public productName!: string;
-  public specification!: string | null;
-  public imageUrl!: string | null;
-  public imagePath!: string | null;
-  public createdAt!: Date;
-  public updatedAt!: Date | null;
+  constructor() {
+    this.prisma = new PrismaClient();
+  }
 
-  static associate(models: any): void {
-    // Define associations if needed
+  async create(product: ProductAttributes) {
+    return await this.prisma.product.create({
+      data: product,
+    });
+  }
+
+  async findMany() {
+    return await this.prisma.product.findMany({});
+  }
+
+  async findById(productId: string) {
+    return await this.prisma.product.findFirst({
+      where: {
+        productId: { equals: productId },
+      },
+    });
+  }
+
+  async update(productId: string, updates: ProductAttributes) {
+    return await this.prisma.product.update({
+      where: {
+        productId: productId,
+      },
+      data: updates,
+    });
+  }
+
+  async delete(productId: string) {
+    return await this.prisma.product.delete({
+      where: {
+        productId: productId,
+      },
+    });
   }
 }
-
-export default (sequelize: Sequelize, DataTypes: any) => {
-  Product.init(
-    {
-      productIndex: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
-        unique: true,
-      },
-      productId: {
-        type: DataTypes.STRING,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        primaryKey: true,
-      },
-      productName: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      specification: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      imageUrl: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      imagePath: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
-    },
-    {
-      sequelize,
-      modelName: "Product",
-      tableName: "_products",
-      timestamps: true,
-      underscored: true,
-    }
-  );
-
-  return Product;
-};

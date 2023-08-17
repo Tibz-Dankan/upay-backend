@@ -1,9 +1,7 @@
-import { Model, DataTypes, Sequelize } from "sequelize";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
-
+import bcryptjs from "bcryptjs";
+const { hash, compare } = bcryptjs;
 export interface UserAttributes {
-  userId: number;
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -18,121 +16,115 @@ export interface UserAttributes {
   passwordResetExpires?: Date | null;
 }
 
-class User extends Model<UserAttributes> implements UserAttributes {
-  public userId!: number;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public phone!: string;
-  public password!: string;
-  public role!: "customer" | "admin";
-  public imageUrl?: string;
-  public imagePath?: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
-  public passwordResetToken?: string | null;
-  public passwordResetExpires?: Date | null;
+import { randomBytes, createHash } from "crypto";
 
-  static associate(models: any): void {
-    // User.hasMany(models.Booking, {
-    //   foreignKey: "userId",
-    //   as: "bookings",
-    // });
-    // User.hasMany(models.Chat, {
-    //   foreignKey: "senderId",
-    //   as: "chat",
-    // });
+import { PrismaClient } from "@prisma/client";
+
+export default class User {
+  private prisma: any;
+
+  constructor() {
+    this.prisma = new PrismaClient();
   }
 
-  async correctPassword(password: string): Promise<boolean> {
-    return await bcrypt.compare(password, this.password);
+  async create(user: UserAttributes) {
+    user.password = await hash(`${user.password}`, 10);
+
+    return await this.prisma.user.create({
+      data: user,
+      select: {
+        userId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        imageUrl: true,
+      },
+    });
   }
 
-  createPasswordResetToken(): string {
-    console.log("Running create reset token");
-    const resetToken = crypto.randomBytes(32).toString("hex");
+  async findMany() {
+    return await this.prisma.user.findMany({});
+  }
 
-    this.setDataValue(
-      "passwordResetToken",
-      crypto.createHash("sha256").update(resetToken).digest("hex")
-    );
-    this.setDataValue(
-      "passwordResetExpires",
-      new Date(Date.now() + 20 * 60 * 1000)
-    );
+  async findById(userId: String) {
+    return await this.prisma.user.findFirst({
+      where: {
+        userId: { equals: userId },
+      },
+    });
+  }
 
+  async findByEmail(email: String) {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: { equals: email },
+      },
+    });
+  }
+
+  async update(id: Number, name: String, email: String) {
+    return await this.prisma.user.update({
+      where: {
+        id: { equals: id },
+      },
+      data: {
+        name: name,
+        email: email,
+      },
+    });
+  }
+
+  async updatePassword(userId: Number, newPassword: String) {
+    const newHashedPassword = await hash(`${newPassword}`, 10);
+    return await this.prisma.user.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        password: newHashedPassword,
+      },
+    });
+  }
+
+  async comparePasswords(currentPassword: String, savedPassword: String) {
+    return await compare(`${currentPassword}`, `${savedPassword}`);
+  }
+
+  createPasswordResetToken() {
+    const resetToken = randomBytes(32).toString("hex");
     return resetToken;
   }
+
+  async savePasswordResetToken(userId: Number, resetToken: String) {
+    const hashedToken = createHash("sha256")
+      .update(`${resetToken}`)
+      .digest("hex");
+
+    return await this.prisma.user.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        passwordResetToken: hashedToken,
+        passwordResetExpires: new Date(Date.now() + 1000 * 60 * 20),
+      },
+    });
+  }
+
+  async updatePasswordResetToken(user: UserAttributes) {
+    return await this.prisma.user.update({
+      where: {
+        userId: user.userId,
+      },
+      data: {
+        passwordResetToken: user.passwordResetToken,
+        passwordResetExpires: user.passwordResetExpires,
+      },
+    });
+  }
+
+  async passwordResetExpired(expiryDate: String) {
+    return new Date(`${expiryDate}`) < new Date(Date.now());
+  }
 }
-
-export default (sequelize: Sequelize, DataTypes: any) => {
-  User.init(
-    {
-      userId: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-        defaultValue: DataTypes.UUID,
-        // autoIncrement: true,
-      },
-      firstName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      lastName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-          isEmail: true,
-        },
-      },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      role: {
-        type: DataTypes.ENUM("customer", "admin"),
-        defaultValue: "customer",
-      },
-      imageUrl: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      imagePath: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      passwordResetToken: {
-        type: DataTypes.STRING,
-      },
-      passwordResetExpires: {
-        type: DataTypes.DATE,
-      },
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
-    },
-    {
-      sequelize,
-      modelName: "User",
-    }
-  );
-
-  // Add hook to hash password before saving
-  User.beforeSave(async (user: User) => {
-    if (user.changed("password")) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(user.password, salt);
-      user.password = hashedPassword;
-    }
-  });
-
-  return User;
-};

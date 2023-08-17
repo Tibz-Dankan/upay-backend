@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { models } from "../models";
+import { Product } from "../models"; // Import your Product model
 import { AppError } from "../utils/error";
 import { asyncHandler } from "../utils/asyncHandler";
 
-const Product = models.Product;
+const product = new Product(); // Create an instance of your Product model
 
 export const addProduct = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -12,44 +12,36 @@ export const addProduct = asyncHandler(
     if (!productName) {
       return next(new AppError("Product name is required", 400));
     }
-    const newProduct = Product.build(req.body);
-    await newProduct.save();
 
-    res.status(201).json({
-      status: "success",
-      data: {
-        product: newProduct,
-      },
+    const newProduct = await product.create({
+      productName,
+      specification,
+      imageUrl,
+      imagePath,
     });
+
+    res.status(201).json({ success: true, data: newProduct });
   }
 );
 
 export const getProductById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const productId = req.params.productId;
-    const product = await Product.findOne({ where: { productId } });
 
-    if (!product) {
+    const foundProduct = await product.findById(productId);
+
+    if (!foundProduct) {
       return next(new AppError("Product not found", 404));
     }
-    res.status(200).json({
-      status: "success",
-      data: {
-        product,
-      },
-    });
+
+    res.status(200).json({ success: true, data: foundProduct });
   }
 );
 
 export const getAllProducts = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const products = await Product.findAll();
+    const products = await product.findMany();
 
-    res.status(200).json({
-      status: "success",
-      data: {
-        products,
-      },
-    });
+    res.status(200).json({ success: true, data: products });
   }
 );

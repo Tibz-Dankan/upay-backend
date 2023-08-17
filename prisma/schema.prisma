@@ -13,7 +13,7 @@ enum Role {
   admin
 }
 
-model Users {
+model User {
   userIndex            Int       @unique @default(autoincrement())
   userId               String    @id @default(uuid())
   firstName            String    @db.Text
@@ -28,11 +28,9 @@ model Users {
   updatedAt            DateTime? @updatedAt
   passwordResetToken   String?   @db.Text
   passwordResetExpires DateTime?
-
-  @@map("_users")
 }
 
-model Products {
+model Product {
   productIndex  Int       @unique @default(autoincrement())
   productId     String    @id @default(uuid())
   productName   String    @db.Text
@@ -41,8 +39,6 @@ model Products {
   imagePath     String?   @db.Text
   createdAt     DateTime  @default(now())
   updateAt      DateTime? @updatedAt
-
-  @@map("_products")
 }
 
 // model Subject {
