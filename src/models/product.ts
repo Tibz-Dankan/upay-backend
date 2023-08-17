@@ -69,6 +69,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     {
       sequelize,
       modelName: "Product",
+      tableName: "_products",
       timestamps: true,
       underscored: true,
     }

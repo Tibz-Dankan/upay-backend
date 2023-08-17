@@ -25,20 +25,24 @@ model Users {
   imageUrl             String?   @db.Text
   imagePath            String?   @db.Text
   createdAt            DateTime  @default(now())
-  updatedAt             DateTime? @updatedAt
+  updatedAt            DateTime? @updatedAt
   passwordResetToken   String?   @db.Text
   passwordResetExpires DateTime?
+
+  @@map("_users")
 }
 
 model Products {
-  productIndex Int          @unique @default(autoincrement())
-  productId    String       @id @default(uuid())
-  productName   String       @db.Text
-  specification   String?       @db.Text
-  imageUrl             String?   @db.Text
-  imagePath            String?   @db.Text
-  createdAt    DateTime     @default(now())
-  updateAt     DateTime?    @updatedAt
+  productIndex  Int       @unique @default(autoincrement())
+  productId     String    @id @default(uuid())
+  productName   String    @db.Text
+  specification String?   @db.Text
+  imageUrl      String?   @db.Text
+  imagePath     String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updateAt      DateTime? @updatedAt
+
+  @@map("_products")
 }
 
 // model Subject {
