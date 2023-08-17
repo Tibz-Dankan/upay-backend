@@ -42,6 +42,18 @@ export default class Product {
     });
   }
 
+  async updateImage(productId: string, imageUrl: string, imagePath: string) {
+    return await this.prisma.product.update({
+      where: {
+        productId: productId,
+      },
+      data: {
+        imageUrl: imageUrl,
+        imagePath: imagePath,
+      },
+    });
+  }
+
   async delete(productId: string) {
     return await this.prisma.product.delete({
       where: {
